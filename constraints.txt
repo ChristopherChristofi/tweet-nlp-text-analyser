@@ -1,0 +1,9 @@
+python-dotenv
+twarc
+jq
+pyspark
+SQLAlchemy
+SQLAlchemy-Utils
+numpy
+pandas
+dask
