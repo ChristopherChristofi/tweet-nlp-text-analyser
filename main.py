@@ -5,7 +5,7 @@ options = {
     "api_option" : "[1] - Search Twitter API (Overwrites; Removes gathered retweets; Commandline Method(CM))",
     "format_option" : "[2] - Format Raw Data (CM)",
     "load_raw_data" : "[3] - Load Raw Data",
-    "reprint_options" : "[101] - Reprint all options",
+    "reprint_options" : "\n[101] - Reprint all options",
     "exit_option" : "[0] - Exit program"
 }
 
@@ -31,7 +31,7 @@ if __name__ == "__main__":
                 )
         if option == 2:
             subprocess.run(
-                './scripts/raw_csv_formatting.sh'
+                './scripts/raw_data_formatting.sh'
                 )
         if option == 3:
             load_data_options(run=1)
