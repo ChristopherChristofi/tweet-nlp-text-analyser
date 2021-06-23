@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_utils import create_database, database_exists
 from data.resources import data_store
-from data.raw.resources import dbusertable, dbtweettable, dbhashtagtable
+from data.raw.resources import dbtweettable, dbhashtagtable
 
 Base = declarative_base()
 
@@ -14,24 +14,15 @@ class TwitterTweet(Base):
 
     id = Column(Integer, primary_key=True)
     tweet_id = Column(String, unique=True)
+    user_id = Column(String)
     date_created = Column(String)
     tweet_text = Column(String)
 
-    def __init__(self, tweet_id, date_created, tweet_text):
+    def __init__(self, tweet_id, user_id, date_created, tweet_text):
         self.tweet_id = tweet_id
+        self.user_id = user_id
         self.date_created = date_created
         self.tweet_text = tweet_text
-
-class TwitterUser(Base):
-    __tablename__  = dbusertable
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(String)
-    tweet_id = Column(String, ForeignKey("{table}.tweet_id".format(table=dbtweettable)))
-    tweet = relationship("TwitterTweet")
-
-    def __init__(self, user_id):
-        self.user_id = user_id
 
 class TwitterHashtag(Base):
     __tablename__ = dbhashtagtable

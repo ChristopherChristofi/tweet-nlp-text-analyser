@@ -3,8 +3,7 @@ from api_connect.store.load_json import integrate_load
 
 options = {
     "tweets_option" : "[1] - Load Tweet Data",
-    "users_option" : "[2] - Load Users Data",
-    "hashtag_option" : "[3] - Load Hashatg Data",
+    "hashtags_option" : "[2] - Load Hashtag Data",
     "reprint_options" : "\n[101] - Reprint all options",
     "exit_option" : "[0] - Exit program"
 }
@@ -38,11 +37,9 @@ def load_data_options(run=0):
         if option == 101:
             print_options()
         if option == 1:
-            integrate_load(tweets=1, users=0, hashtags=0)
+            integrate_load(tweets=1, hashtags=0)
         if option == 2:
-            integrate_load(tweets=0, users=1, hashtags=0)
-        if option == 3:
-            integrate_load(tweets=0, users=0, hashtags=1)
+            integrate_load(tweets=0, hashtags=1)
         if option == 0:
             print("Exit")
             start = False

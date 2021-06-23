@@ -1,12 +1,10 @@
 from dask import dataframe as dd
 from data.resources import data_store
-from data.raw.resources import dbusertable, dbtweettable, dbhashtagtable
+from data.raw.resources import dbtweettable, dbhashtagtable
 
-tweet_filepath = "./data/raw/output/*tweets.csv"
+tweet_filepath = "./data/raw/output/tweet_data*.csv"
 
-user_filepath = "./data/raw/output/*users.csv"
-
-hashtag_filepath = "./data/raw/output/*hashtags.csv"
+hashtag_filepath = "./data/raw/output/hashtag_data*.csv"
 
 def load_data(
     path=None
@@ -32,7 +30,6 @@ def load_data(
 
 def integrate_load(
     tweets=0
-    ,users=0
     ,hashtags=0
     ):
 
@@ -51,25 +48,12 @@ def integrate_load(
             ,dbtable=dbtweettable
             ,headers=[
                 'tweet_id'
+                ,'user_id'
                 ,'date_created'
                 ,'tweet_text'
                 ]
             )
         print("Tweets loaded.")
-
-    if users == True:
-
-        print("Loading data.")
-
-        load_data(
-            path=user_filepath
-            ,dbtable=dbusertable
-            ,headers=[
-                'user_id'
-                ,'tweet_id'
-                ]
-            )
-        print("Users loaded.")
 
     if hashtags == True:
 
