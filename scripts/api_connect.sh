@@ -1,58 +1,72 @@
-#! usr/bin/bash
+#!/usr/bin/bash
 
 declare -A source_files
 declare -A process_files
 
-# Pre-selected Twitter API search terms
-Health_terms=('insomnia' 'headache' 'stress')
-Emotive_terms=('cry' 'anxiety' 'sad')
-
-# Designated data extraction filepath
-source_files[file_1]="./data/raw/tweets_1.jsonl"
-source_files[file_2]="./data/raw/tweets_2.jsonl"
-
-# Designated filepath retweet removal preprocessing filepath
-process_files[file_1]="./data/raw/no_retweets_1.jsonl"
-process_files[file_2]="./data/raw/no_retweets_2.jsonl"
+# Processing duration calculate
+function timestampGen() {
+    duration=$[ $(date +'%s') - $1 ]
+    echo "Completion time: ${duration}"
+}
 
 function deselectRetweets() {
     # Function to deselect tweets where retweeted status is true with jq
-    jq -c ' . | select(.retweeted_status == null)' $1 > $2
+    cat $1 | jq -c ' . | select(.retweeted_status == null)' > $2
 }
 
-# Connect to historic Twitter API with twarc and filtering with jq
-for i in "${!source_files[@]}"
-do
-    # Initiate processes by distinct key filepath (for: Health terms search parameter)
-    if [[ "$i" == "file_1" ]]
-    then
-        echo "Searching Twitter API. Building file: ${source_files["$i"]}"
-        # Data extraction from historic Twitter API search
-        twarc search "'${Health_terms[0]} OR ${Health_terms[1]} OR ${Health_terms[2]}'" --lang en > ${source_files["$i"]}
-        # Qualify filepath for raw data extraction exists
-        if [[ -e ${source_files["$i"]} ]]
-        echo "File: ${source_files["$i"]} created => Now processing.. please wait"
-        then
-            # Call to function
-            deselectRetweets "${source_files[$i]}" "${process_files[$i]}"
-            echo "File: ${process_files["$i"]} created"
-        else
-            echo "File: ${process_files["$i"]} has not been created."
-        fi
-    # Initiate processes by distinct key filepath (for: Emotive terms search parameter)
-    elif [[ "$i" == "file_2" ]]
-    then
-        echo "Searching Twitter API. Building file: ${source_files["$i"]}"
-        twarc search "'${Emotive_terms[0]} OR ${Emotive_terms[1]} OR ${Emotive_terms[2]}'" --lang en > ${source_files["$i"]}
-        if [[ -e ${source_files["$i"]} ]]
-        echo "File: ${source_files["$i"]} created => Now processing.. please wait"
-        then
-            deselectRetweets "${source_files[$i]}" "${process_files[$i]}"
-            echo "File: ${process_files["$i"]} created"
-        else
-            echo "File: ${process_files["$i"]} has not been created."
-        fi
-    else
-        echo "No file designated for data redirection."
-    fi
-done
+function searchAPI() {
+    # Responsible for connecting and searching the historic twitter API using twarc with defined parameters
+    twarc search "'$1 OR $2 OR $3'" --lang en > $4
+}
+
+# Initial processing start time
+init=$(date +'%s')
+
+# Pre-selected Twitter API search terms
+tweets_1=('insomnia' 'headache' 'stress')
+tweets_2=('cry' 'anxiety' 'sad')
+tweets_3=('depression' 'suicide' 'hurt')
+
+# Designated data extraction filepath
+source_files[tweets_1]="../data/raw/raw_tweets_1_${init}.jsonl"
+source_files[tweets_2]="../data/raw/raw_tweets_2_${init}.jsonl"
+source_files[tweets_3]="../data/raw/raw_tweets_3_${init}.jsonl"
+
+# Designated filepath retweet removal preprocessing filepath
+process_files[tweets_1]="../data/raw/no_retweets_1_${init}.jsonl"
+process_files[tweets_2]="../data/raw/no_retweets_2_${init}.jsonl"
+process_files[tweets_3]="../data/raw/no_retweets_3_${init}.jsonl"
+
+echo -e "\nSearch Twitter API:\n[1] 'insomnia' 'headache' 'stress'\n[2] 'cry' 'anxiety' 'sad'\n[3] 'depression' 'suicide' 'hurt'"
+echo -ne "\nSelect option: "
+# Number input option pattern
+read OPTION
+
+case $OPTION in
+
+    1)
+    # Set of functions responsible for connecting to the historic twitter API and basic retweet removal
+    echo "Searching twitter API for '${OPTION}' selection. Initial time: ${init}";
+    searchAPI "${tweets_1[0]}" "${tweets_1[1]}" "${tweets_1[2]}" "${source_files[tweets_1]}" \
+    && deselectRetweets "${source_files[tweets_1]}" "${process_files[tweets_1]}"
+    ;;
+
+    2)
+    echo "Searching twitter API for '${OPTION}' option selection. Initial time: ${init}";
+    searchAPI "${tweets_2[0]}" "${tweets_2[1]}" "${tweets_2[2]}" "${source_files[tweets_2]}" \
+    && deselectRetweets "${source_files[tweets_2]}" "${process_files[tweets_2]}"
+    ;;
+
+    3)
+    echo "Searching twitter API for '${OPTION}' option selection. Initial time: ${init}";
+    searchAPI "${tweets_3[0]}" "${tweets_3[1]}" "${tweets_3[2]}" "${source_files[tweets_3]}" \
+    && deselectRetweets "${source_files[tweets_3]}" "${process_files[tweets_3]}"
+    ;;
+
+    *)
+    echo "Incorrect option selection provided."
+    ;;
+
+esac; \
+timestampGen "${init}"
+
