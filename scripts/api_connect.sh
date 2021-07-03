@@ -46,19 +46,19 @@ case $OPTION in
 
     1)
     # Set of functions responsible for connecting to the historic twitter API and basic retweet removal
-    echo "Searching twitter API for '${OPTION}' selection. Initial time: ${init}";
+    echo "Searching twitter API for '${OPTION}' selection. Initial time: ${init}"
     searchAPI "${tweets_1[0]}" "${tweets_1[1]}" "${tweets_1[2]}" "${source_files[tweets_1]}" \
     && deselectRetweets "${source_files[tweets_1]}" "${process_files[tweets_1]}"
     ;;
 
     2)
-    echo "Searching twitter API for '${OPTION}' option selection. Initial time: ${init}";
+    echo "Searching twitter API for '${OPTION}' option selection. Initial time: ${init}"
     searchAPI "${tweets_2[0]}" "${tweets_2[1]}" "${tweets_2[2]}" "${source_files[tweets_2]}" \
     && deselectRetweets "${source_files[tweets_2]}" "${process_files[tweets_2]}"
     ;;
 
     3)
-    echo "Searching twitter API for '${OPTION}' option selection. Initial time: ${init}";
+    echo "Searching twitter API for '${OPTION}' option selection. Initial time: ${init}"
     searchAPI "${tweets_3[0]}" "${tweets_3[1]}" "${tweets_3[2]}" "${source_files[tweets_3]}" \
     && deselectRetweets "${source_files[tweets_3]}" "${process_files[tweets_3]}"
     ;;
@@ -67,6 +67,5 @@ case $OPTION in
     echo "Incorrect option selection provided."
     ;;
 
-esac; \
+esac;
 timestampGen "${init}"
-

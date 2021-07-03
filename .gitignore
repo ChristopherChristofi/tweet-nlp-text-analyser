@@ -3,6 +3,7 @@
 /.pnp
 .pnp.js
 venv
+searchvenv
 
 # testing
 /coverage
@@ -27,3 +28,4 @@ yarn-error.log*
 *.json
 *.csv
 twarc.*
+notes.txt

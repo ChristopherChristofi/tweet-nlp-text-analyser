@@ -4,12 +4,6 @@ declare -A source_files
 declare -A process_files
 declare -A output_files
 
-# Processing duration calculate
-function timestampGen() {
-    duration=$[ $(date +'%s') - $1 ]
-    echo "Completion time: ${duration}"
-}
-
 # Data jsonl conversion to csv with formatting by defined attribute parameters.
 # Replaces newline escape characters with tabs to prevent parsing errors
 # and maintain csv delimitation and lining. eg tweet text overline spills over
@@ -31,14 +25,14 @@ function formatHashtagData() {
 # Initial processing start time
 init=$(date +'%s')
 
-source_files[set_1]="./data/raw/raw_no_retweets*.jsonl"
-source_files[process_type_1]="./data/raw/process/raw_no_retweets_${init}.jsonl"
+source_files[set_1]="../data/raw/no_retweets*.jsonl"
+source_files[process_type_1]="../data/raw/process/raw_no_retweets_${init}.jsonl"
 
-process_files[type_1]="./data/raw/process/tweet_processing_${init}.csv"
-process_files[type_2]="./data/raw/process/hashtag_processing_${init}.csv"
+process_files[type_1]="../data/raw/process/tweet_processing_${init}.csv"
+process_files[type_2]="../data/raw/process/hashtag_processing_${init}.csv"
 
-output_files[type_1]="./data/raw/output/tweet_data_${init}.csv"
-output_files[type_2]="./data/raw/output/hashtag_data_${init}.csv"
+output_files[type_1]="../data/raw/output/tweet_data_${init}.csv"
+output_files[type_2]="../data/raw/output/hashtag_data_${init}.csv"
 
 echo -e "\nFormatting options:\n[1] - Format Tweet Data\n[2] - Format Hashtag Data"
 echo -ne "\nSelect a formatting option: "
@@ -63,5 +57,6 @@ case $OPTION in
     echo -e "\nNone selected\n"
     ;;
 
-esac; \
-timestampGen "${init}"
+esac;
+duration=$[ $(date +'%s') - ${init} ] \
+&& echo "Completion time: ${duration}"

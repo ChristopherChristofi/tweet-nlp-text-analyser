@@ -1,9 +1,10 @@
 python-dotenv
 twarc
 jq
-pyspark
 SQLAlchemy
 SQLAlchemy-Utils
+psycopg2
 numpy
 pandas
 dask
+nltk
