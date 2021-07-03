@@ -1,6 +1,7 @@
 import subprocess
 from api_connect.store.data_options import load_data_options
-from api_connect.store.extraction.data_streamreader import show_it
+from api_connect.store.extraction.data_streamreader import DataReader
+from data.resources import data_store
 
 options = {
     "api_option" : "[1] - Search Twitter API (Overwrites; Removes gathered retweets; Commandline Method(CM))",
@@ -42,4 +43,4 @@ if __name__ == "__main__":
 
         #test datareader
         if option == 5:
-            show_it(1)
+            DataReader(data_store).transform()

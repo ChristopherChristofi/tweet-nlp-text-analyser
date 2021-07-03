@@ -1,10 +1,56 @@
 import time
 import psycopg2
-from data.resources import data_store
+import re
 import nltk
 from nltk import sent_tokenize, wordpunct_tokenize
+from nltk.stem.wordnet import WordNetLemmatizer
+from nltk.corpus import stopwords
+
+class Preprocessor:
+
+    '''
+    Responsible for normalization and provides essential text manipulation
+    '''
+
+    def __init__(self, data):
+        self.data = data
+        self.stopwords = set(stopwords.words('english'))
+        self.lemmatizer = WordNetLemmatizer()
+
+    def remove_mentions(self):
+        for sentence in self.data:
+            yield re.sub('@\w+', ' ', sentence)
+
+    def remove_hyperlinks(self):
+        for sentence in self.remove_mentions():
+            yield re.sub(r'http\S+', ' ', sentence)
+
+    def remove_short_words(self):
+        for sentence in self.remove_hyperlinks():
+            yield re.sub(r'\s+\w{2}\s+', ' ', sentence)
+
+    def validate_alphabet(self):
+        for sentence in self.remove_short_words():
+            yield [token.lower() for token in nltk.word_tokenize(sentence) if token.isalpha()]
+
+    def remove_stopwords(self):
+        for sentence in self.validate_alphabet():
+            yield [token for token in sentence if not token in self.stopwords]
+
+    def lemmatize(self):
+        for sentence in self.remove_stopwords():
+            for token in sentence:
+                yield self.lemmatizer.lemmatize(token)
+
+    def normalize(self):
+        return self.lemmatize()
+
 
 class DataReader:
+
+    '''
+    Responsible for wrangling and reading a stream of text data extracted from database
+    '''
 
     def __init__(self, uri):
 
@@ -76,14 +122,13 @@ class DataReader:
             'duration_secs': time.time() - init,
         }
 
-def show_it(run=0):
+    def transform(self):
 
-    '''
-    Test init function connected to main.py
-    '''
+        init = time.time()
 
-    if run == True:
+        for sentence in self.sentence_segmentation():
 
-        register = DataReader(data_store)
+            Preprocessor(sentence).normalize()
 
-        print(register.summary())
+        duration = time.time() - init
+        print(duration)
