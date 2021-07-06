@@ -12,7 +12,7 @@ declare -A output_files
 function formatTweetData() {
     cat $1 | jq -c '. | {tweet_id: .id_str, user_id: .user.id_str, date_created: .created_at, tweet_text: .full_text}' >> $2 \
     && sed 's/\\n/\\t/g' $2 | jq -cr ". | [.tweet_id, .user_id, .date_created, .tweet_text] | @csv" > $3 \
-    && sort $3 -u > $4 && echo "File created: $4";
+    && sort $3 -u | tr [:upper:] [:lower:] > $4 && echo "File created: $4";
 }
 
 # Data jsonl conversion to csv with formatting by defined attribute parameters.
