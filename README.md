@@ -15,10 +15,11 @@ social media users.
     .
     ├── api/
     |    ├─store/
-    |    |   ├─extraction/
-    |    |       ├─ data stream readers
-    |    ├─database configuration
-    |    ├─data loading
+    |       ├─extraction/
+    |       |     ├─ data stream readers
+    |       ├─database configuration
+    |       ├─data loading
+    |       ├─processing options
     |
     ├── scripts/
     |    ├─twitter api wrapper
