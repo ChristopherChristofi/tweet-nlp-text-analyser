@@ -11,7 +11,7 @@ class ContextKeyphrasePreprocessor:
         self.data = data
         self.punctuation = set(string.punctuation)
         # Test grammar pattern
-        self.grammar = r'KT: {<DT><JJ.*><NN.*>}'
+        self.grammar = r'KT: {<DT><JJ><NN>}'
         self.chunker = nltk.chunk.regexp.RegexpParser(self.grammar)
 
     def generate_grammar_patterning(self, sentence=None):
@@ -39,7 +39,7 @@ class ContextKeyphrasePreprocessor:
         Responsible for removing the presence of tokens of which begin with unicode category P(unctuation)
         '''
 
-        validate_punctuation = lambda word: all(unicodedata.category(c).startswith('P') for c in word)
+        validate_punctuation = lambda word: all(unicodedata.category(char).startswith('P') for char in word)
         sentence = filter(lambda token: not validate_punctuation(token[0]), sentence)
         sentence = map(lambda token: (token[0], token[1]), sentence)
         return list(sentence)

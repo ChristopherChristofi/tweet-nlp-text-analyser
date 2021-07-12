@@ -29,3 +29,4 @@ yarn-error.log*
 *.csv
 twarc.*
 notes.txt
+nlp_pos_notes.txt

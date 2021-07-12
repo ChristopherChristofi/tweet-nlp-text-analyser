@@ -1,6 +1,6 @@
 import subprocess
-from api_connect.store.data_options import load_data_options
-from api_connect.store.extraction.data_streamreader import DataReader
+from api.store.data_options import load_data_options
+from api.store.extraction.data_streamreader import DataReader
 from data.resources import data_store
 
 options = {

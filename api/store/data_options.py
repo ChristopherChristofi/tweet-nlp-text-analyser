@@ -1,5 +1,5 @@
-from api_connect.store.configuration import build
-from api_connect.store.load_json import integrate_load
+from api.store.configuration import build
+from api.store.load_json import integrate_load
 
 options = {
     "tweets_option" : "[1] - Load Tweet Data",
