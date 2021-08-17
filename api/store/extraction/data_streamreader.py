@@ -1,14 +1,14 @@
-import time, psycopg2, unicodedata, nltk, arrow, csv
+import time, logging, psycopg2, re, unicodedata, nltk, arrow, csv
 from nltk.sentiment import SentimentIntensityAnalyzer
 
 class TweetPreprocessor:
 
-    def __init__(self, data_id=None, date=None, data=None, filepath=None):
+    def __init__(self, data_id=None, tweet_date=None, data=None, filepath=None):
         self.data_id = data_id
         self.data = data
-        self.date = date
-        self.analyzer = SentimentIntensityAnalyzer()
+        self.tweet_date = tweet_date
         self.filepath = filepath
+        self.analyzer = SentimentIntensityAnalyzer()
 
     def format_date (self):
 
@@ -16,21 +16,21 @@ class TweetPreprocessor:
         # "Mon Jan 01 23:59:59 +0000 2000"
         original_format = r"ddd[\s+]MMM[\s+]DD[\s+]HH:mm:ss[\s+]Z[\s+]YYYY"
 
-        transformed_date = arrow.get(self.date, original_format).format('YYYY-MM-DD')
+        transformed_date = arrow.get(self.tweet_date, original_format).format('YYYY-MM-DD')
 
-        transformed_time = arrow.get(self.date, original_format).format('HH:mm:ss')
+        transformed_time = arrow.get(self.tweet_date, original_format).format('HH:mm:ss')
 
         return transformed_date, transformed_time
 
     def format_data_generation(self, score):
 
-        if score >= 0 and score <= 0.39: state = 0
-        if score >= 0.4 and score <= 0.79: state = 1
-        if score >= 0.8 and score <= 1: state = 2
+        if score >= 0 and score <= 0.39: label = 0
+        if score >= 0.4 and score <= 0.79: label = 1
+        if score >= 0.8 and score <= 1: label = 2
 
         tweet_date, tweet_time = self.format_date()
 
-        return [self.data_id, self.data, tweet_date, tweet_time, score, state]
+        return [self.data_id, self.data, tweet_date, tweet_time, score, label]
 
     def transform(self, sentiment_score=None):
 
@@ -42,11 +42,20 @@ class TweetPreprocessor:
             write = csv.writer(f)
             write.writerows(row)
 
+        logging.info("Tweet {id} saved to file: {filename}".format(id=row[0][0], filename=self.filepath[2:]))
+
     def generate_sentiment(self, sentence=None):
 
         vs = self.analyzer.polarity_scores(''.join(sentence))
-        #print("{id}::{sent} - {sentiment}".format(id=self.data_id, sent=sentence, sentiment=str(vs)))
         return vs['neg']
+
+    def remove_mentions(self, datum=None):
+
+        return re.sub('@\w+', '', datum)
+
+    def remove_hyperlinks(self, datum=None):
+
+        return re.sub(r'http\S+', '', self.remove_mentions(datum))
 
     def normalize(self, sentence=None):
 
@@ -62,12 +71,14 @@ class TweetPreprocessor:
 
         sentiment_scores = []
 
-        for sentence in nltk.sent_tokenize(self.data):
-            sentence = self.normalize(self.data)
+        for sentence in nltk.sent_tokenize(self.remove_hyperlinks(self.data)):
+            sentence = self.normalize(sentence)
             if not sentence: continue
             sentiment_scores.append(self.generate_sentiment(sentence))
 
         sentiment_score = max(sentiment_scores)
+
+        logging.info("Sentiment calculated for tweet: {id}".format(id=self.data_id))
 
         self.transform(round(sentiment_score, 2))
 
@@ -83,9 +94,10 @@ class DataReader:
         Instantiates the database connection
         '''
 
+        self.init = time.time()
+        self.filepath = "./sentiment_data_{timestamp}.csv".format(timestamp=int(self.init))
         self.cursor = psycopg2.connect(uri).cursor()
-        self.filepath = "./sentiment_data.csv"
-        self.file_header = ['tweet_id', 'tweet_text', 'date', 'time', 'negative_polarity', 'label']
+        self.file_header = ['tweet_id', 'tweet_text', 'tweet_date', 'tweet_time', 'negative_polarity', 'label']
 
     def tweets(self):
 
@@ -93,20 +105,28 @@ class DataReader:
         Responsible for generating tweet text corpus from database.
         '''
 
-        self.cursor.execute("SELECT tweet_id, date_created, tweet_text FROM raw_tweet_table;")
+        self.cursor.execute("SELECT tweet_id, date_created, tweet_text FROM raw_tweet_table LIMIT 100;")
         for text in list(iter(self.cursor.fetchone, None)):
             yield text
 
     def transform(self):
 
-        init = time.time()
-
         with open(file=self.filepath, mode="w", newline="") as f:
             write = csv.writer(f)
             write.writerow(self.file_header)
 
-        for tweet in self.tweets():
-            TweetPreprocessor(tweet[0], tweet[1], tweet[2], self.filepath).extract_sentiment()
+        logging.info("Data file created: {filename}".format(filename=self.filepath[2:]))
 
-        duration = time.time() - init
-        print("\n\n\n", duration)
+        for tweet in self.tweets():
+            TweetPreprocessor(
+                data_id=tweet[0],
+                tweet_date=tweet[1],
+                data=tweet[2],
+                filepath=self.filepath
+                ).extract_sentiment()
+
+        duration = time.time() - self.init
+
+        print("Sentiment analysis data streamer complete.")
+
+        logging.info("Sentiment analysis streamreading complete. Duration: {time}s".format(time=int(duration)))
