@@ -1,4 +1,5 @@
-import subprocess
+import subprocess, logging
+from archive import logger
 from api.store.data_options import load_data_options
 from api.store.extraction.data_streamreader import DataReader
 from data.resources import data_store
@@ -22,10 +23,15 @@ if __name__ == "__main__":
 
     print_options()
 
+    logger("projectlogfile.log")
+
     start = 1
+
+    logging.info("Project started")
 
     while start == True:
         option = int(input('\nSelect an option > '))
+        logging.info("Option selected: {selection}".format(selection=option))
         if option == 101:
             print_options()
         if option == 1:
