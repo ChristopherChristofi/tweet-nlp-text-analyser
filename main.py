@@ -1,14 +1,18 @@
 import subprocess, logging
 from archive import logger
 from api.store.data_options import load_data_options
-from api.store.extraction.data_streamreader import DataReader
+from analyser.extraction.streamreader import DataReader
+from analyser.store.data_options import load_stage_options
+from analyser.store.analytical_options import load_analytic_options
 from data.resources import data_store
 
 options = {
     "api_option" : "[1] - Search Twitter API (Overwrites; Removes gathered retweets; Commandline Method(CM))",
     "format_option" : "[2] - Format Raw Data (CM)",
     "load_raw_data" : "[3] - Load Raw Data",
-    "extract_phrases_option" : "[4] - Initiate preprocessing and keyphrase extraction",
+    "sentiment_option" : "[4] - Initiate preprocessing and generate sentiment analysis",
+    "load_stage_data" : "[5] - Load Stage Data (Labelled Sentiment Score Data)",
+    "load_analytical_data" : "[6] - Load Analytical Data (Labelled Sentiment Score Data)",
     "reprint_options" : "\n[101] - Reprint all options",
     "exit_option" : "[0] - Exit program"
 }
@@ -46,6 +50,10 @@ if __name__ == "__main__":
             load_data_options(run=1)
         if option == 4:
             DataReader(data_store).transform()
+        if option == 5:
+            load_stage_options(run=1)
+        if option == 6:
+            load_analytic_options(run=1)
         if option == 0:
             print("Exit")
             start = False
