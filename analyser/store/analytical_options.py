@@ -1,6 +1,6 @@
 # same root database configuration
 from api.store.configuration import build
-from analyser.analysis.streamreader import DataReader
+from analyser.analysis.streamreader import SentimentDataReader
 from data.resources import data_store
 
 options = {
@@ -40,13 +40,13 @@ def load_analytic_options(run=0):
             print_options()
         if option == 1:
             print("Loading data...")
-            DataReader(data_store).generate_label_data(run=1, polarity=0)
+            SentimentDataReader(data_store).generate_label_data(run=1, polarity=0)
         if option == 2:
             print("Loading data...")
-            DataReader(data_store).generate_label_data(run=1, polarity=1)
+            SentimentDataReader(data_store).generate_label_data(run=1, polarity=1)
         if option == 3:
             print("Loading data...")
-            DataReader(data_store).generate_label_data(run=1, polarity=2)
+            SentimentDataReader(data_store).generate_label_data(run=1, polarity=2)
         if option == 0:
             print("Exit")
             start = False

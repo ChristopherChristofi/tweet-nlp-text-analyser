@@ -1,6 +1,6 @@
 import logging, psycopg2, csv, time
 
-class DataReader:
+class SentimentDataReader:
 
     '''
     Responsible for wrangling and reading a stream of text data extracted from database
@@ -21,45 +21,29 @@ class DataReader:
             write = csv.writer(f)
             write.writerow(self.file_header)
 
-    def generate_csv_data(self, filepath=None, data=None):
+        logging.info("Data file created: {filepath}".format(filepath=filepath[22:]))
 
-        self.build_data_file(filepath=filepath)
+    def generate_csv_data(self, filepath=None, data=None):
 
         with open(file=filepath, mode="a", encoding="utf-8", newline="") as f:
             write = csv.writer(f)
             write.writerows(data)
 
-    def extreme_negative_tweets(self):
+        logging.info("Tweet {id} saved to file: {filepath}".format(id=data[0][0], filepath=filepath[22:]))
+
+    def generate_tweets(self, polarity=None):
 
         '''
         Responsible for generating tweet text corpus from database.
         '''
 
-        self.cursor.execute("SELECT * FROM stage_sentiment_table WHERE label_polarity='2';")
-        for text in list(iter(self.cursor.fetchone, None)):
-            yield text
-
-    def negative_tweets(self):
-
-        '''
-        Responsible for generating tweet text corpus from database.
-        '''
-
-        self.cursor.execute("SELECT * FROM stage_sentiment_table WHERE label_polarity='1';")
-        for text in list(iter(self.cursor.fetchone, None)):
-            yield text
-
-    def not_negative_tweets(self):
-
-        '''
-        Responsible for generating tweet text corpus from database.
-        '''
-
-        self.cursor.execute("SELECT * FROM stage_sentiment_table WHERE label_polarity='0';")
+        self.cursor.execute("SELECT * FROM stage_sentiment_table WHERE label_polarity='{polarity}';".format(polarity=polarity))
         for text in list(iter(self.cursor.fetchone, None)):
             yield text
 
     def generate_label_data(self, run=0, polarity=None):
+
+        logging.info("Generating Sentiment labelled dataset by polarity: {polarity}".format(polarity=polarity))
 
         if run:
 
@@ -67,22 +51,19 @@ class DataReader:
 
             label = "label_{polarity}".format(polarity=str(polarity))
 
-            filepath = './data/stage/analysis/{file_label}_data_{time}.csv'.format(file_label=label, time=self.init)
+            filepath = './data/stage/analysis/{file_label}_data_{time}.csv'.format(file_label=label, time=int(self.init))
 
-            if polarity == 0:
+            if polarity or polarity == 0:
 
-                for tweet in self.not_negative_tweets():
+                self.build_data_file(filepath=filepath)
+
+                for tweet in self.generate_tweets(polarity=polarity):
                     row.append(tweet)
                     self.generate_csv_data(filepath=filepath, data=row)
+                    row = []
 
-            if polarity == 1:
+        duration = time.time() - self.init
 
-                for tweet in self.negative_tweets():
-                    row.append(tweet)
-                    self.generate_csv_data(filepath=filepath, data=row)
+        print("Labelled sentiment data by polarity: {polarity} generated.".format(polarity=polarity))
 
-            if polarity == 2:
-
-                for tweet in self.extreme_negative_tweets():
-                    row.append(tweet)
-                    self.generate_csv_data(filepath=filepath, data=row)
+        logging.info("Labelled sentiment data by polarity: {polarity} generated. Duration: {time}s".format(polarity=polarity, time=int(duration)))
