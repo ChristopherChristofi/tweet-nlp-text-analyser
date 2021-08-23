@@ -17,6 +17,10 @@ class SentimentDataReader:
 
     def build_data_file(self, filepath=None):
 
+        '''
+        Opens new CSV data file and add header row for database output
+        '''
+
         with open(file=filepath, mode="w", newline="") as f:
             write = csv.writer(f)
             write.writerow(self.file_header)
@@ -24,6 +28,10 @@ class SentimentDataReader:
         logging.info("Data file created: {filepath}".format(filepath=filepath[22:]))
 
     def generate_csv_data(self, filepath=None, data=None):
+
+        '''
+        Writes stream data from database generator as rows to CSV output file
+        '''
 
         with open(file=filepath, mode="a", encoding="utf-8", newline="") as f:
             write = csv.writer(f)
@@ -34,7 +42,7 @@ class SentimentDataReader:
     def generate_tweets(self, polarity=None):
 
         '''
-        Responsible for generating tweet text corpus from database.
+        Responsible for generating tweet text corpus from database by selected polarity label.
         '''
 
         self.cursor.execute("SELECT * FROM stage_sentiment_table WHERE label_polarity='{polarity}';".format(polarity=polarity))
@@ -49,13 +57,19 @@ class SentimentDataReader:
 
             row = []
 
+            # Generates filename relevant to polarity option selected
+
             label = "label_{polarity}".format(polarity=str(polarity))
 
             filepath = './data/stage/analysis/{file_label}_data_{time}.csv'.format(file_label=label, time=int(self.init))
 
+            # Qualifies polarity input
+
             if polarity or polarity == 0:
 
                 self.build_data_file(filepath=filepath)
+
+                # Generate data rows from database data generation
 
                 for tweet in self.generate_tweets(polarity=polarity):
                     row.append(tweet)

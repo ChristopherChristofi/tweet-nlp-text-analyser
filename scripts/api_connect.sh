@@ -27,15 +27,17 @@ tweets_1=('insomnia' 'headache' 'stress')
 tweets_2=('cry' 'anxiety' 'sad')
 tweets_3=('depression' 'suicide' 'hurt')
 
+# Filepaths to datasets - in case of error due operating system, access bash scripts directly
+# and change filepaths to "../data/" instead of "./data/"
 # Designated data extraction filepath
-source_files[tweets_1]="../data/raw/raw_tweets_1_${init}.jsonl"
-source_files[tweets_2]="../data/raw/raw_tweets_2_${init}.jsonl"
-source_files[tweets_3]="../data/raw/raw_tweets_3_${init}.jsonl"
+source_files[tweets_1]="./data/raw/raw_tweets_1_${init}.jsonl"
+source_files[tweets_2]="./data/raw/raw_tweets_2_${init}.jsonl"
+source_files[tweets_3]="./data/raw/raw_tweets_3_${init}.jsonl"
 
 # Designated filepath retweet removal preprocessing filepath
-process_files[tweets_1]="../data/raw/no_retweets_1_${init}.jsonl"
-process_files[tweets_2]="../data/raw/no_retweets_2_${init}.jsonl"
-process_files[tweets_3]="../data/raw/no_retweets_3_${init}.jsonl"
+process_files[tweets_1]="./data/raw/no_retweets_1_${init}.jsonl"
+process_files[tweets_2]="./data/raw/no_retweets_2_${init}.jsonl"
+process_files[tweets_3]="./data/raw/no_retweets_3_${init}.jsonl"
 
 echo -e "\nSearch Twitter API:\n[1] 'insomnia' 'headache' 'stress'\n[2] 'cry' 'anxiety' 'sad'\n[3] 'depression' 'suicide' 'hurt'"
 echo -ne "\nSelect option: "

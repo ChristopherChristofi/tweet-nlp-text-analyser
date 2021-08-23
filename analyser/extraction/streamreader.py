@@ -24,6 +24,11 @@ class TweetProcessor:
 
     def format_data_generation(self, score):
 
+        ''''
+        Qualifies label based on the score for negative polarity, and builds the finalised
+        data row for writing to the CSV file
+        '''
+
         if score >= 0 and score <= 0.39: label = 0
         if score >= 0.4 and score <= 0.79: label = 1
         if score >= 0.8 and score <= 1: label = 2
@@ -33,6 +38,10 @@ class TweetProcessor:
         return [self.data_id, self.data, tweet_date, tweet_time, score, label]
 
     def transform(self, sentiment_score=None):
+
+        '''
+        Writes sentiment evaluated tweet data row to opened CSV file.
+        '''
 
         row = []
 
@@ -45,6 +54,10 @@ class TweetProcessor:
         logging.info("Tweet {id} saved to file: {filename}".format(id=row[0][0], filename=self.filepath[20:]))
 
     def generate_sentiment(self, sentence=None):
+
+        '''
+        Responsible for generating emotive polarity scores, returns only negative polarity.
+        '''
 
         vs = self.analyzer.polarity_scores(''.join(sentence))
         return vs['neg']
@@ -69,17 +82,25 @@ class TweetProcessor:
 
     def extract_sentiment(self):
 
+        '''
+        Responsible for integrating text normalization methods, and calling the sentiment analyzer method before saving
+        the relevent max negative polarity for a given tweet.
+        '''
+
         sentiment_scores = []
 
+        # initiate text normalization for each sentence of a tweet
         for sentence in nltk.sent_tokenize(self.remove_hyperlinks(self.data)):
             sentence = self.normalize(sentence)
             if not sentence: continue
+            # build array of each relevant negative polarity score for a given tweet
             sentiment_scores.append(self.generate_sentiment(sentence))
 
         sentiment_score = max(sentiment_scores)
 
         logging.info("Sentiment calculated for tweet: {id}".format(id=self.data_id))
 
+        # save the negative polarity and write to a new CSV output file
         self.transform(round(sentiment_score, 2))
 
 class DataReader:
@@ -111,12 +132,18 @@ class DataReader:
 
     def transform(self):
 
+        '''
+        Iniaties tweet data generator method and integrates tweet processor class transformation mechanisms
+        '''
+
+        # create new output file
         with open(file=self.filepath, mode="w", newline="") as f:
             write = csv.writer(f)
             write.writerow(self.file_header)
 
         logging.info("Data file created: {filename}".format(filename=self.filepath[20:]))
 
+        # Process generated data objects from database
         for tweet in self.tweets():
             TweetProcessor(
                 data_id=tweet[0],

@@ -11,8 +11,8 @@ options = {
     "format_option" : "[2] - Format Raw Data (CM)",
     "load_raw_data" : "[3] - Load Raw Data",
     "sentiment_option" : "[4] - Initiate preprocessing and generate sentiment analysis",
-    "load_stage_data" : "[5] - Load Stage Data (Labelled Sentiment Score Data)",
-    "load_analytical_data" : "[6] - Load Analytical Data (Labelled Sentiment Score Data)",
+    "load_stage_data" : "[5] - Load Stage Data into database (Sentiment Score Data)",
+    "load_analytical_data" : "[6] - Generate Final Analytical Data (Labelled Sentiment Score Data)",
     "reprint_options" : "\n[101] - Reprint all options",
     "exit_option" : "[0] - Exit program"
 }
