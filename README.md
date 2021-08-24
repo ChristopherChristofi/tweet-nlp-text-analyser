@@ -2,21 +2,32 @@
 
 ## Description:
 
+PROJECT RESOURCES directory contains data gathered during project AND powerpoint presentation.
+
 MSc Project.
 
-An implementation of natural language text analysis on gathered public tweet data. With such methods involving
-sentiment analysis techniques and use of neural network classification models.
-Such practice methods of machine learning can be used to both determine the
-potentiality of depressive mental disorders, as well as, suicidal tendency in the language used by
-social media users.
+A natural language data pipeline for Twitter data and conducting sentiment analysis.
+
 
 ## Top-level Directory:
 
     .
+    ├── project_resources/
+    |    ├─ presentation
+    |    ├─ project_data.zip/
+    |       ├─ raw
+    |       ├─ final (labelled datasets)
+    |
+    ├── analyser/
+    |    ├─analysis/
+    |    |     ├─ streamreader (Labelled Datasets)
+    |    |
+    |    ├─/extraction
+    |          ├─ streamreader (NLP preprocessing and Sentiment Analysis)
+    |
     ├── api/
     |    ├─store/
-    |       ├─extraction/
-    |       |     ├─ data stream readers
+    |       ├─analytical options
     |       ├─database configuration
     |       ├─data loading
     |       ├─processing options
@@ -30,8 +41,11 @@ social media users.
     |    |   ├─completed/ (raw data)
     |    |   ├─process/   (temp)
     |    |   ├─output/    (store ready)
+    |    ├─stage/
+    |    |   ├─analysis/ (Labelled Datasets)
     |    ├─resource utilities
     |
+    ├── archive.py
     ├── main.py
     ├── LICENSE
     └── README.md
